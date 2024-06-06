@@ -46,25 +46,31 @@ class AppForm(QMainWindow):
     QMessageBox.information(self, "CLICK!", msg)
 
   def on_draw(self):
-
-
-    
     self.axes.clear()
+
+    # self.slide1_value.setText(f'{self.slider1.value()}')
+    # self.slide2_value.setText(f'{self.slider2.value()}')
+
+
+
+
     self.axes.grid(self.grid_cb.isChecked())
-    r13 = np.linspace(0, 8 * np.pi, 1000)
+    r = np.linspace(0, 8 * np.pi, 1000)
 
-    a = self.slider1.value()/100
-    b = self.slider2.value()/100
+    a = self.slider1.value() / 1000
+    b = self.slider2.value() / 1000
 
+    x1 = np.sin(r * b)
+    y1 = np.cos(r * a)
 
-    w1 = np.sin(r13*b)
-    w2 = np.cos(r13*a)
-    self.axes.plot(w1,w2,'k')
+    self.axes.plot(x1,y1,'k')
     self.canvas.draw()
+
+
 
   def create_main_frame(self):
     self.main_frame = QWidget()
-
+    
     self.dpi = 100
     self.fig = Figure((5,4),dpi = self.dpi)
     self.canvas = FigureCanvas(self.fig)
@@ -80,26 +86,30 @@ class AppForm(QMainWindow):
     self.grid_cb.setChecked(False)
     self.grid_cb.stateChanged.connect(self.on_draw)
 
-    slider_label2 = QLabel('cos val 0-1:')
+    self.slider2_label = QLabel('sin val:')
     self.slider2 = QSlider(Qt.Horizontal)
-    self.slider2.setRange(0,100)
+    self.slider2.setRange(0,1000)
     self.slider2
-    self.slider2.setValue(50)
+    self.slider2.setValue(500)
     self.slider2.setTracking(True)
     self.slider2.valueChanged.connect(self.on_draw)
+    self.slide2_value = QLabel()
+
+    
   
-    slider_label1 = QLabel('sin val 0-1:')
+    slider_label1 = QLabel('cos val:')
     self.slider1 = QSlider(Qt.Horizontal)
-    self.slider1.setRange(0,100)
+    self.slider1.setRange(0,1000)
     self.slider1
-    self.slider1.setValue(50)
+    self.slider1.setValue(500)
     self.slider1.setTracking(True)
     self.slider1.valueChanged.connect(self.on_draw)
-
+    self.slide1_value = QLabel()
+    
     hbox = QHBoxLayout()
 
-    for w in [self.grid_cb,
-               slider_label2, self.slider2, slider_label1,self.slider1]:
+    for w in [self.grid_cb,self.slider2_label,self.slide2_value,
+              self.slider2, slider_label1, self.slide1_value, self.slider1]:
       hbox.addWidget(w)
       hbox.setAlignment(w,Qt.AlignVCenter)
 
