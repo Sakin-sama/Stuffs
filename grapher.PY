@@ -1,13 +1,17 @@
-import sys, os, random
+import sys, os
 
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
+import numpy as np
+
 import matplotlib
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
+
+
 
 class AppForm(QMainWindow):
   def __init__(self,parent=None):
@@ -18,13 +22,12 @@ class AppForm(QMainWindow):
     self.create_main_frame()
     self.create_status_bar()
 
-    self.textbox.setText('1 2 3 4')
     self.on_draw()
 
   def save_plot(self):
     file_choices = "PNG (*.png) |*.png"
 
-    path, ext, = QFileDialog.getSaveFileName(self,'Save         file','',file_choices)
+    path, ext, = QFileDialog.getSaveFileName(self,'Save file','',file_choices)
     path = path.encode('utf-8')
     if not path[-4] == file_choices[-4:].encode('utf-8'):
       path += file_choices[-4:].encode('utf-8')
@@ -43,20 +46,20 @@ class AppForm(QMainWindow):
     QMessageBox.information(self, "CLICK!", msg)
 
   def on_draw(self):
-    str = self.textbox.text().encode('utf-8')
-    self.data = [int(s) for s in str.split()]
 
-    x = range(len(self.data))
+
+    
     self.axes.clear()
     self.axes.grid(self.grid_cb.isChecked())
+    r13 = np.linspace(0, 8 * np.pi, 1000)
 
-    self.axes.bar(
-      x=x,
-      height=self.data,
-      width=self.slider.value()/100.0,
-      align='center',
-      alpha=0.44,
-      picker=5)
+    a = self.slider1.value()/100
+    b = self.slider2.value()/100
+
+
+    w1 = np.sin(r13*b)
+    w2 = np.cos(r13*a)
+    self.axes.plot(w1,w2,'k')
     self.canvas.draw()
 
   def create_main_frame(self):
@@ -73,29 +76,30 @@ class AppForm(QMainWindow):
 
     self.mpl_toolbar = NavigationToolbar(self.canvas, self.main_frame)
 
-    self.textbox = QLineEdit()
-    self.textbox.setMinimumWidth(200)
-    self.textbox.editingFinished.connect(self.on_draw)
-
-    self.draw_button = QPushButton("&Draw")
-    self.draw_button.clicked.connect(self.on_draw)
-    
     self.grid_cb = QCheckBox("Show &Grid")
     self.grid_cb.setChecked(False)
     self.grid_cb.stateChanged.connect(self.on_draw)
 
-    slider_label = QLabel('Bar width (%):')
-    self.slider = QSlider(Qt.Horizontal)
-    self.slider.setRange(1,100)
-    self.slider.setValue(20)
-    self.slider.setTracking(True)
-    self.slider.setTickPosition(QSlider.TicksBothSides)
-    self.slider.valueChanged.connect(self.on_draw)
+    slider_label2 = QLabel('cos val 0-1:')
+    self.slider2 = QSlider(Qt.Horizontal)
+    self.slider2.setRange(0,100)
+    self.slider2
+    self.slider2.setValue(50)
+    self.slider2.setTracking(True)
+    self.slider2.valueChanged.connect(self.on_draw)
+  
+    slider_label1 = QLabel('sin val 0-1:')
+    self.slider1 = QSlider(Qt.Horizontal)
+    self.slider1.setRange(0,100)
+    self.slider1
+    self.slider1.setValue(50)
+    self.slider1.setTracking(True)
+    self.slider1.valueChanged.connect(self.on_draw)
 
     hbox = QHBoxLayout()
 
-    for w in [self.textbox, self.draw_button, self.grid_cb,
-               slider_label, self.slider]:
+    for w in [self.grid_cb,
+               slider_label2, self.slider2, slider_label1,self.slider1]:
       hbox.addWidget(w)
       hbox.setAlignment(w,Qt.AlignVCenter)
 
@@ -162,24 +166,6 @@ def main():
 
 
 
-
-# x = np.linspace(0, 8 * np.pi, 1000)
-
-# a = np.random.rand()
-# b = np.random.rand()
-
-
-# y = np.sin(x*b)
-# z = np.cos(x*a)
-
-
-# plt.plot(y,z,'k')
-# plt.axis('square')
-# plt.axis([-1.1,1.1,-1.1,1.1])
-# plt.axis('off')
-# plt.title('a=%s,b=%s' %(np.round(a,2),np.round(b,2)))
-
-# plt.show()
 
 
 if __name__ == "__main__":
