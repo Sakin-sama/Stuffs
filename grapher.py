@@ -1,8 +1,9 @@
-import sys, os
+import sys, random
 
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
+
 
 import numpy as np
 
@@ -21,6 +22,8 @@ class AppForm(QMainWindow):
     self.create_menu()
     self.create_main_frame()
     self.create_status_bar()
+
+    # self.textbox.setText('1 2 3 4')
 
     self.on_draw()
 
@@ -48,14 +51,20 @@ class AppForm(QMainWindow):
   def on_draw(self):
     self.axes.clear()
 
-    # self.slide1_value.setText(f'{self.slider1.value()}')
-    # self.slide2_value.setText(f'{self.slider2.value()}')
 
+    
+       
 
-
+    self.slide1_value.setText(f'{self.slider1.value()/1000}')
+    self.slide2_value.setText(f'{self.slider2.value()/1000}')
 
     self.axes.grid(self.grid_cb.isChecked())
-    r = np.linspace(0, 8 * np.pi, 1000)
+
+    if self.textbox.text():
+      r = np.linspace(0, float(self.textbox.text()) * np.pi, 1000)
+    else:
+      r = np.linspace(0, np.pi, 1000)
+
 
     a = self.slider1.value() / 1000
     b = self.slider2.value() / 1000
@@ -66,11 +75,14 @@ class AppForm(QMainWindow):
     self.axes.plot(x1,y1,'k')
     self.canvas.draw()
 
-
+  def randomize(self):
+    self.slider1.setValue(round(random.uniform(0,1000)))
+    self.slider2.setValue(round(random.uniform(0,1000)))
+    self.textbox.setText(str(round(random.uniform(1,100))))
 
   def create_main_frame(self):
     self.main_frame = QWidget()
-    
+    font_var = QFont("PT Mono")
     self.dpi = 100
     self.fig = Figure((5,4),dpi = self.dpi)
     self.canvas = FigureCanvas(self.fig)
@@ -90,39 +102,69 @@ class AppForm(QMainWindow):
     self.slider2 = QSlider(Qt.Horizontal)
     self.slider2.setRange(0,1000)
     self.slider2
-    self.slider2.setValue(500)
+    self.slider2.setValue(1000)
     self.slider2.setTracking(True)
     self.slider2.valueChanged.connect(self.on_draw)
-    self.slide2_value = QLabel()
-
-    
+    self.slide2_value = QLabel("1000")
+    self.slide2_value.setMinimumWidth(50)
+    self.slide2_value.setFont(font_var)
+    # self.slider2.sliderMoved.connect(self.on_slider2_moved)
   
+    # fonts = QFontDatabase()
+    # names = fonts.families()
+    # print(names) 
+    self.random_button = QPushButton("&Randomize")
+    self.random_button.clicked.connect(self.randomize)
+    self.random_button.clicked.connect(self.on_draw)
+    
     slider_label1 = QLabel('cos val:')
     self.slider1 = QSlider(Qt.Horizontal)
+
     self.slider1.setRange(0,1000)
     self.slider1
-    self.slider1.setValue(500)
+    self.slider1.setValue(1000)
     self.slider1.setTracking(True)
     self.slider1.valueChanged.connect(self.on_draw)
-    self.slide1_value = QLabel()
+    self.slide1_value = QLabel("1000")
+    self.slide1_value.setMinimumWidth(50)
+    self.slide1_value.setFont(font_var)
+    # self.slider1.sliderMoved.connect(self.on_slider1_moved)
     
-    hbox = QHBoxLayout()
+    self.textlabel = QLabel("number of x values to input in the functions for f(x)")
 
-    for w in [self.grid_cb,self.slider2_label,self.slide2_value,
+    self.textbox = QLineEdit()
+    # self.textbox.setMinimumWidth(25)
+    # self.textbox.setMaximumWidth()
+    self.textbox.textChanged.connect(self.on_draw)
+    self.textbox.setText("8")
+
+    hbox = QHBoxLayout()
+    hbox2 = QHBoxLayout()
+
+
+    for w in [self.grid_cb, self.slider2_label,self.slide2_value,
               self.slider2, slider_label1, self.slide1_value, self.slider1]:
       hbox.addWidget(w)
       hbox.setAlignment(w,Qt.AlignVCenter)
+
+    for c in [self.textlabel,self.textbox, self.random_button]:
+       hbox2.addWidget(c)
+       hbox2.setAlignment(c,Qt.AlignVCenter)
 
     vbox = QVBoxLayout()
     vbox.addWidget(self.canvas)
     vbox.addWidget(self.mpl_toolbar)
     vbox.addLayout(hbox)
+    vbox.addLayout(hbox2)
+
+
+
 
     self.main_frame.setLayout(vbox)
     self.setCentralWidget(self.main_frame)
 
   def create_status_bar(self):
-      self.status_text = QLabel("This is a demo")
+      self.status_text = QLabel("It works?")
       self.statusBar().addWidget(self.status_text,1)
 
   def create_menu(self):
