@@ -1,2 +1,2 @@
 # Stuffs
-I have no clue how to use github so if my stuff seems shitty that's because it is.
+A small project I did with the help of the internet and some guy named John
