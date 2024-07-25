@@ -1,2 +1,2 @@
 # Stuffs
-July 2024 Python commits so main branch isnt flooded
+I have no clue how to use github so if my stuff seems shitty that's because it is.
